@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AdventuresOfAlfred" default="archive">
+    <property name="basedir" value="." />  
+    <property name="build.home" value="${basedir}/bin" />  
+    <property name="build.classes" value="${build.home}/classes" />  
+    <property name="mf" value="${build.classes}/MANIFEST.MF" />  
+    <property name="src" value="${basedir}/src" />  
+    <property name="dist" value="${build.home}/dist" />
+    <property name="lib" value="${basedir}/lib" />
+    <property name="manifest.main.class" value="com.yofreke.alfred.Game" />
+    
+    <target name="init" >  
+        <mkdir dir="${build.classes}" />  
+    </target>
+    
+  	<target name="compile" depends="init">
+		<echo>Compiling...</echo>
+		<javac debug="on" srcdir="${src}" destdir="${build.classes}">
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+	
+  	<target name="copy" depends="compile">
+		<echo>Making manifest</echo>
+		<manifest file="${mf}">
+		    <attribute name="Main-Class" value="${manifest.main.class}"/>
+		    <attribute name="Class-Path" value="lib/slick.jar lib/lwjgl.jar" />
+		</manifest>
+  	    
+		<echo>Copying external files</echo>
+		<copy todir="${dist}/res">
+			<fileset dir="res"/>
+		</copy>
+		
+		<copy todir="${dist}">
+			<fileset dir="lib/native/windows"/>
+		</copy>
+		<copy file="lib/lwjgl.jar" todir="${dist}/lib"/>
+		<copy file="lib/slick.jar" todir="${dist}/lib"/>
+		
+		<echo>Creating jar...</echo>
+		 <jar destfile="${dist}/${ant.project.name}.jar" compress="true" manifest="${mf}">  
+            <fileset dir="${build.classes}" includes="**/*.*" />  
+            <fileset dir="${dist}" includes="lib/*.*" />
+        </jar>  
+	</target>
+	
+  	<target name="archive" depends="copy">
+		<echo>Zipping...</echo>
+		<delete file="${ant.project.name}_dist.zip" />
+		<zip destfile="${ant.project.name}_dist.zip" basedir="${dist}" excludes="dont*.*" />
+		
+		<!--<delete dir="${dist}" />
+		<delete dir="${build.classes}" />-->
+	</target>
+</project>
