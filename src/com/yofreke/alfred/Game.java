@@ -19,6 +19,8 @@ public class Game extends StateBasedGame {
 	public static int MENU_STATE = 2;
 	public static int INGAME_STATE = 3;
 	
+	public static boolean DEBUG = false;
+	
 	public Game(){
 		super("Adventures of Alfred");
 		instance = this;
@@ -34,12 +36,10 @@ public class Game extends StateBasedGame {
 		addState(new IngameState());
 	}
 	
-	//// //// //// ////
+	//// Main Entry ////
 	public static void main(String[] args) {
 		// ME.debugEnabled = true;
-
-		try
-		{
+		try {
 			// Log.setVerbose(false);
 			AppGameContainer container = new AppGameContainer(new Game());
 			container.setDisplayMode(WIDTH, HEIGHT, false);
@@ -50,8 +50,7 @@ public class Game extends StateBasedGame {
 			// switch off mouse cursor
 			container.start();
 		}
-		catch (SlickException e)
-		{
+		catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}

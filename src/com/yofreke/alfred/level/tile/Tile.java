@@ -44,6 +44,11 @@ public class Tile {
 		tiles[id] = this;
 	}
 	
+	public Tile setName(String name) {
+		this.name = name;
+		return this;
+	}
+	
 	public Tile setColor(float r, float g, float b){
 		this.debugColor.r = r;
 		this.debugColor.g = g;
@@ -147,15 +152,15 @@ public class Tile {
 	}
 	
 	public static Tile invalid = new Tile(0, 0).setColor(0.8f, 0, 0).setCanPass(false);
-	public static Tile water = new WaterTile(1, 1).setColor(0, 0, 0.8f).setCanPass(false);
-	public static Tile dirt = new DirtTile(2, 16).setColor(0.75f, 0.75f, 0.55f);
-	public static Tile grass = new GrassTile(3, 64).setColor(0.2f, 0.85f, 0.2f);
-	public static Tile sand = new SandTile(4, 112).setColor(0.8f, 0.7f, 0.3f);
-	public static Tile tree = new TreeTile(15, 16).setColor(0.1f, 0.65f, 0.1f).setCanPass(false);
-	public static Tile stump = new TreeStumpTile(16, 16).setColor(0.55f, 0.65f, 0.35f);
-	public static Tile flag = new FlagTile(17, 69).setColor(0.55f, 0.7f, 0.67f).setCanPass(false);
-	public static Tile gravel = new GravelTile(18, 208).setColor(0.55f, 0.4f, 0.3f);
-	public static Tile stone = new StoneTile(20, 160).setColor(0.3f, 0.3f, 0.3f).setCanPass(false);
+	public static Tile water = new WaterTile(1, 1).setColor(0, 0, 0.8f).setCanPass(false).setName("Water");
+	public static Tile dirt = new DirtTile(2, 16).setColor(0.75f, 0.75f, 0.55f).setName("Dirt");
+	public static Tile grass = new GrassTile(3, 64).setColor(0.2f, 0.85f, 0.2f).setName("Grass");
+	public static Tile sand = new SandTile(4, 112).setColor(0.8f, 0.7f, 0.3f).setName("Sand");
+	public static Tile tree = new TreeTile(15, 16).setColor(0.1f, 0.65f, 0.1f).setCanPass(false).setName("Tree");
+	public static Tile stump = new TreeStumpTile(16, 16).setColor(0.55f, 0.65f, 0.35f).setName("Tree Stump");
+	public static Tile flag = new FlagTile(17, 69).setColor(0.55f, 0.7f, 0.67f).setCanPass(false).setName("Flag");
+	public static Tile gravel = new GravelTile(18, 208).setColor(0.55f, 0.4f, 0.3f).setName("Gravel");
+	public static Tile stone = new StoneTile(20, 160).setColor(0.3f, 0.3f, 0.3f).setCanPass(false).setName("Stone");
 	
 
 	public static Tile lumberjack = new LumberjackTile(60, 37).setColor(0.7f, 0.3f, 0.3f).setCanPass(false);

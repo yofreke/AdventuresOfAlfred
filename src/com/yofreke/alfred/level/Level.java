@@ -286,6 +286,12 @@ public class Level {
 		return new Point((int) ((stageX - (int)(mapOffsetX * curZoom + Game.WIDTH * 0.5f)) / (Chunk.TILE_SIZE * curZoom)), 
 				(int) ((stageY - (int)(mapOffsetY * curZoom + Game.HEIGHT * 0.5f)) / (Chunk.TILE_SIZE * curZoom)));
 	}
+	public int toTileX(int stageX) {
+		return (int) ((stageX - (int)(mapOffsetX * curZoom + Game.WIDTH * 0.5f)) / (Chunk.TILE_SIZE * curZoom));
+	}
+	public int toTileY(int stageY) {
+		return (int) ((stageY - (int)(mapOffsetY * curZoom + Game.HEIGHT * 0.5f)) / (Chunk.TILE_SIZE * curZoom));
+	}
 	// TODO: Something still messed up with this
 	public float toLocalX(float stageX){
 		return (stageX - (mapOffsetX * curZoom + Game.WIDTH * 0.5f)) / curZoom;
@@ -443,14 +449,18 @@ public class Level {
 		}
 	}
 	
-	public void render(GameContainer arg0, StateBasedGame arg1, Graphics g, boolean showBlocked) throws SlickException {
-		g.setClip(0, 0, Game.WIDTH, Game.HEIGHT);
-		// draw map
-		g.drawRect(0, 0, Game.WIDTH * 0.5f, Game.HEIGHT * 0.5f);
-		g.pushTransform();
+	public void setupLevelTransform(Graphics g) {
 		g.translate(Game.WIDTH * 0.5f, Game.HEIGHT * 0.5f);
 		g.scale(curZoom, curZoom);
 		g.translate(mapOffsetX, mapOffsetY);
+	}
+	
+	public void render(GameContainer arg0, StateBasedGame arg1, Graphics g, boolean showBlocked) throws SlickException {
+		g.setClip(0, 0, Game.WIDTH, Game.HEIGHT);
+		// draw map
+		g.drawRect(0, 0, Game.WIDTH * 0.5f, Game.HEIGHT * 0.5f); // Guideline
+		g.pushTransform();
+		setupLevelTransform(g);
 		float cPixelSize = Chunk.CHUNK_SIZE * Chunk.TILE_SIZE;
 		int viewRad = (int)(Game.WIDTH * 0.5f * (1 / curZoom));//(int) (cPixelSize * 2);
 		int left = (int) Math.max((-mapOffsetX - viewRad) / cPixelSize, 0);
@@ -464,15 +474,18 @@ public class Level {
 			}
 		}
 		// draw ents
-		for(int i = 0; i < entities.size(); i++){
+		int len = entities.size();
+		for(int i = 0; i < len; i++){
 			entities.get(i).render(g);
 		}
-		for(int i = 0; i < effects.size(); i++){
+		len = effects.size();
+		for(int i = 0; i < len; i++){
 			effects.get(i).render(g);
 		}
 		if(selectedEntities.size() > 0){
 			g.setColor(Color.green);
-			for(int i = 0; i < selectedEntities.size(); i++){
+			len = selectedEntities.size();
+			for(int i = 0; i < len; i++){
 				selectedEntities.get(i).renderSelectionInfo(g);
 			}
 		}

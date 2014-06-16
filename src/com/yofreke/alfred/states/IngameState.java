@@ -7,6 +7,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -33,6 +34,7 @@ public class IngameState extends AlfredGameState {
 	private static boolean LMB, RMB; 
 	private static int mouseX = 0, mouseY = 0;
 	private static int prevMouseX = 0, prevMouseY = 0;
+	private static int mouseTileX = 0, mouseTileY = 0;
 	
 	public Level level;
 	public static Image guiImage;
@@ -66,6 +68,8 @@ public class IngameState extends AlfredGameState {
 		prevMouseY = py;
 		mouseX = x;
 		mouseY = y;
+		mouseTileX = level.toTileX(mouseX);
+		mouseTileY = level.toTileY(mouseY);
 		isHovering = updateHovering(x, y);
 	}
 	public void mouseClicked(int mb, int x, int y, int arg3) {
@@ -79,11 +83,8 @@ public class IngameState extends AlfredGameState {
 				heldTile = ((GuiBuyButton) elem).getBuildingTile();
 			}
 		} else if(heldTile != null){
-			System.out.println(level.toLocalX(mouseX));
-			int placeX = (int) (level.toLocalX(mouseX) / Chunk.TILE_SIZE);
-			int placeY = (int) (level.toLocalY(mouseY) / Chunk.TILE_SIZE);
-			if(canPlaceHeld(placeX, placeY)){
-				level.setTile(placeX, placeY, heldTile.id);
+			if(canPlaceHeld(mouseTileX, mouseTileY)){
+				level.setTile(mouseTileX, mouseTileY, heldTile.id);
 				heldTile = null;
 			}
 		} else {
@@ -132,60 +133,41 @@ public class IngameState extends AlfredGameState {
 		return true;
 	}
 	
-	public void update(GameContainer container, StateBasedGame arg1, int arg2) throws SlickException {
+	public void update(GameContainer container, StateBasedGame arg1, int arg2) throws SlickException {	
 		level.update(container, arg1, arg2);
+		
+		Input i = container.getInput();
+		if(i.isKeyPressed(Input.KEY_1)) {
+			Game.DEBUG = !Game.DEBUG;
+		}
 		
 		super.update(container, arg1, arg2);
 	}
 	
 	public void render(GameContainer arg0, StateBasedGame arg1, Graphics g) throws SlickException {
 		level.render(arg0, arg1, g, heldTile != null);
+		g.pushTransform();
+		float mockSize = Chunk.TILE_SIZE * level.curZoom;
+		g.translate(
+				(Game.WIDTH * 0.5f % mockSize + level.mapOffsetX * level.curZoom % mockSize),
+				(Game.HEIGHT * 0.5f % mockSize + level.mapOffsetY * level.curZoom % mockSize)
+			);
 		if(heldTile != null && !isHovering){
-			// draw blocked and available tiles
+			this.drawAvailableTiles(g, mockSize);
+		}
+		g.popTransform();
+		
+		if(heldTile == null) {
 			g.pushTransform();
-			int k = 10;
-    		g.setColor(IGNORE_OVERLAY_COLOR);
-			float mockSize = Chunk.TILE_SIZE * level.curZoom;
-			float translateX = mouseX - mouseX % mockSize + (Game.WIDTH * 0.5f % mockSize + level.mapOffsetX * level.curZoom % mockSize);
-			float translateY = mouseY - mouseY % mockSize + (Game.HEIGHT * 0.5f % mockSize + level.mapOffsetY * level.curZoom % mockSize);
-			float localX = level.toLocalX(translateX);
-			float localY = level.toLocalY(translateY);
-			boolean canPlace = canPlaceHeld((int)(localX / Chunk.TILE_SIZE), (int)(localY / Chunk.TILE_SIZE));
-			g.translate(translateX, translateY);
-			for (int x = -k; x < k; x++)
-            {
-                int h = (int)(k * 0.85f * Math.sin(Math.acos((double)x / (double)k)))/* - (x == 0 ? 1 : 0)*/;
-                for (int y = -h; y < h; y++){
-                	if(heldTile.isInIgnore(x, y) || (x == 0 && y == 0)){
-                		if(canPlace){
-							g.fillRect(x * mockSize, y * mockSize, mockSize, mockSize);
-                		} else {
-	                		g.setColor(BLOCKED_OVERLAY_COLOR);
-	                		g.fillRect(x * mockSize, y * mockSize, mockSize, mockSize);
-	                		g.setColor(IGNORE_OVERLAY_COLOR);
-                		}
-                	} else {
-                		if(level.isBlocked(localX + x * Chunk.TILE_SIZE, localY + y * Chunk.TILE_SIZE)){
-                			g.fillRect(x * mockSize, y * mockSize, mockSize, mockSize);
-                		} else {
-    						//g.drawRect(x * mockSize, y * mockSize, mockSize, mockSize);
-    					}
-                	}
-                }
-            }
+			this.drawTileOverlay(g);
 			g.popTransform();
 		}
+		
 		//TODO: drawElements(g);
 		for(GuiElement element : elementList){
 			element.draw(g);
 		}
-		// minimap
-		float gScale = 4.5f;
-		g.pushTransform();
-		g.translate(Game.WIDTH - 32 * gScale, 0);
-		g.scale(gScale, gScale);
-		g.drawImage(guiImage.getSubImage(224, 0, 32, 32), 0, 0);
-		g.popTransform();
+		this.drawMinimap(g);
 		
 		if(heldTile != null){
 			g.pushTransform();
@@ -198,10 +180,73 @@ public class IngameState extends AlfredGameState {
 		
 		g.setColor(Color.magenta);
 		Point p = level.stageToTile(mouseX, mouseY);
-		g.drawString("("+mouseX+","+mouseY+")", 350, 4);
-		if(level != null) g.drawString("("+(int)level.toLocalX(mouseX)+","+(int)level.toLocalY(mouseY)+")", 450, 4);
-		g.drawString("("+p.x+","+p.y+") "+level.getTile(p.x, p.y), 350, 24);
+		g.drawString("global ("+mouseX+","+mouseY+")", 350, 4);
+		if(level != null) g.drawString("local ("+(int)level.toLocalX(mouseX)+","+(int)level.toLocalY(mouseY)+")", 350, 24);
+		g.drawString("("+p.x+","+p.y+") "+level.getTile(p.x, p.y), 350, 44);
 		g.setColor(Color.white);
+	}
+	
+	public void drawTileOverlay(Graphics g) {
+		
+		int hoverTileId = this.level.getTile(mouseTileX, mouseTileY);
+		Tile hoverTile = Tile.tiles[hoverTileId];
+		
+		g.pushTransform();
+		g.setColor(IGNORE_OVERLAY_COLOR);
+		this.level.setupLevelTransform(g);
+		
+		g.scale(Chunk.TILE_SIZE, Chunk.TILE_SIZE);
+		g.fillRect(mouseTileX, mouseTileY, 1, 1);
+		g.popTransform();
+				
+		ArrayList<String> text = new ArrayList<String>();
+		text.add("Tile Details");
+		text.add("  [" + hoverTileId + "] " + hoverTile.name);
+		IngameState.drawHelpBox(g, mouseX + 8, mouseY - 16, (int) (150), (int) ((4 + 1.5f) * FontRenderer.FONT_HEIGHT), text);
+	}
+	
+	public void drawAvailableTiles(Graphics g, float tileSize) {
+		// draw blocked and available tiles
+		g.pushTransform();
+		int drawRadius = 10;
+		g.setColor(IGNORE_OVERLAY_COLOR);
+		float translateX = mouseX - mouseX % tileSize;
+		float translateY = mouseY - mouseY % tileSize;
+		float localX = level.toLocalX(translateX);
+		float localY = level.toLocalY(translateY);
+		boolean canPlace = canPlaceHeld((int)(localX / Chunk.TILE_SIZE), (int)(localY / Chunk.TILE_SIZE));
+		g.translate(translateX, translateY);
+		g.scale(tileSize, tileSize);
+		for (int x = -drawRadius; x < drawRadius; x++) {
+            int h = (int)(drawRadius * 0.85f * Math.sin(Math.acos((double)x / (double)drawRadius)))/* - (x == 0 ? 1 : 0)*/;
+            for (int y = -h; y < h; y++){
+            	if(heldTile.isInIgnore(x, y) || (x == 0 && y == 0)){
+            		if(canPlace){
+						g.fillRect(x, y, 1, 1);
+            		} else {
+                		g.setColor(BLOCKED_OVERLAY_COLOR);
+                		g.fillRect(x, y, 1, 1);
+                		g.setColor(IGNORE_OVERLAY_COLOR);
+            		}
+            	} else {
+            		if(level.isBlocked(localX + x * Chunk.TILE_SIZE, localY + y * Chunk.TILE_SIZE)){
+            			g.fillRect(x, y, 1, 1);
+            		} else {
+						//g.drawRect(x * mockSize, y * mockSize, mockSize, mockSize);
+					}
+            	}
+            }
+        }
+		g.popTransform();
+	}
+	
+	public void drawMinimap(Graphics g) {
+		float gScale = 4.5f;
+		g.pushTransform();
+		g.translate(Game.WIDTH - 32 * gScale, 0);
+		g.scale(gScale, gScale);
+		g.drawImage(guiImage.getSubImage(224, 0, 32, 32), 0, 0);
+		g.popTransform();
 	}
 	
 	public static void drawHelpBox(Graphics g, int x, int y, int width, int height, ArrayList<String> stringAl){

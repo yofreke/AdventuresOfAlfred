@@ -13,6 +13,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.davedes.FilterableImage;
+import com.yofreke.alfred.Game;
 import com.yofreke.alfred.Perlin;
 import com.yofreke.alfred.level.tile.ITileEntityPair;
 import com.yofreke.alfred.level.tile.Tile;
@@ -209,6 +210,7 @@ public class Chunk {
 			for(y = 0; y < CHUNK_SIZE; y++){
 				for(x = 0; x < CHUNK_SIZE; x++){
 					i = y * CHUNK_SIZE + x;
+					
 					if(useImages){
 						//img = Tile.getImageForId(tileArray[i]);
 						//g.drawImage(img, x * TILE_SIZE, y * TILE_SIZE);
@@ -246,6 +248,12 @@ public class Chunk {
 		g.pushTransform();
 		g.translate(tOffsetX * TILE_SIZE - IMG_BUFF, tOffsetY * TILE_SIZE - IMG_BUFF);
 		g.drawImage(mapImage, 0, 0);
+		// Debugging
+		if(Game.DEBUG) {
+			g.setColor(Color.cyan);
+			g.drawRect(IMG_BUFF, IMG_BUFF, mapImage.getWidth() - 2 * IMG_BUFF, mapImage.getHeight() - 2 * IMG_BUFF);
+		}
+		
 		if(showBlocked){
 			//g.drawImage(mapImageBlocked, 0, 0, BLOCKED_DRAW_COLOR);
 		}

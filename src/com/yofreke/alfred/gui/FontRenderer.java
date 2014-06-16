@@ -17,7 +17,8 @@ public class FontRenderer {
 	}
 	
 	public static char[] chars = new char[]{
-		'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',':','$',' ',' ',' ',' ',
+		'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' ',' ',' ',' ',' ',' ',
+		'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',':','$','[',']',' ',' ',
 		'1','2','3','4','5','6','7','8','9','0','.'  
 	};
 	
@@ -41,7 +42,7 @@ public class FontRenderer {
 			}
 		}
 		charTexX = (int) (i % 32) * 8;
-		charTexY = (int) (i / 32) * 8 + 240;
+		charTexY = (int) (i / 32) * 8 + 232;
 		return true;
 	}
 	
@@ -68,7 +69,6 @@ public class FontRenderer {
 	
 	public static void renderString(Graphics g, String s, int x, int y){
 		drawColor = Color.white;
-		s = s.toUpperCase();
 		for(int i = 0; i < s.length(); i++){
 			if(setCharCoord(s.charAt(i))){
 			//g.drawImage(texSheet.getSubImage(charTexX, charTexY, 4, 8), x, y);
