@@ -21,6 +21,7 @@ import com.yofreke.alfred.entity.Living;
 import com.yofreke.alfred.entity.Lumberjack;
 import com.yofreke.alfred.level.tile.Tile;
 import com.yofreke.alfred.states.IngameState;
+import com.yofreke.alfred.tileEntity.TileEntity;
 
 public class Level {
 	public Random rand = new Random();
@@ -114,6 +115,11 @@ public class Level {
 		if(x < 0 || y < 0 || x >= T_WIDE || y >= T_TALL) return 0;
 		Chunk c = getChunkAt(x, y); 
 		return c.getTile(x - c.tOffsetX, y - c.tOffsetY);
+	}
+	public TileEntity getTileEntity(int x, int y) {
+		if(x < 0 || y < 0 || x >= T_WIDE || y >= T_TALL) return null;
+		Chunk c = getChunkAt(x, y); 
+		return c.getTileEntity(x - c.tOffsetX, y - c.tOffsetY);
 	}
 	public void setTile(int x, int y, int id){
 		if(x < 0 || y < 0 || x >= T_WIDE || y >= T_TALL) return;

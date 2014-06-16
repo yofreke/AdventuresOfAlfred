@@ -21,6 +21,8 @@ import com.yofreke.alfred.level.Chunk;
 import com.yofreke.alfred.level.Level;
 import com.yofreke.alfred.level.tile.BuildingTile;
 import com.yofreke.alfred.level.tile.Tile;
+import com.yofreke.alfred.tileEntity.LivingHomeTE;
+import com.yofreke.alfred.tileEntity.TileEntity;
 
 public class IngameState extends AlfredGameState {
 	
@@ -43,6 +45,10 @@ public class IngameState extends AlfredGameState {
 	private boolean isHovering = false;
 	
 	private GuiElement resourcesBar;
+	
+	private boolean showingTileInfo = false;
+	private int tileInfoX, tileInfoY;
+	private ArrayList<String> tileInfoStringList = new ArrayList<String>();
 	
 	public IngameState() {
 		
@@ -88,6 +94,12 @@ public class IngameState extends AlfredGameState {
 				heldTile = null;
 			}
 		} else {
+			if(showingTileInfo) {
+				hideTileInfo();
+			} else {
+				showTileInfo(mouseTileX, mouseTileY);
+			}
+			
 			level.mouseClicked(mb, x, y, arg3);
 		}
 	}
@@ -133,6 +145,29 @@ public class IngameState extends AlfredGameState {
 		return true;
 	}
 	
+	private void showTileInfo(int x, int y) {
+		showingTileInfo = true;
+		tileInfoX = mouseTileX;
+		tileInfoY = mouseTileY;
+		
+		int hoverTileId = this.level.getTile(mouseTileX, mouseTileY);
+		Tile hoverTile = Tile.tiles[hoverTileId];
+		
+		tileInfoStringList.clear();
+		
+		tileInfoStringList.add("Tile Details");
+		tileInfoStringList.add("  [" + hoverTileId + "] " + hoverTile.name);
+		tileInfoStringList.add("  Tile Damage: " + level.getDamage(mouseTileX, mouseTileY) + " / " + hoverTile.getMaxDamage());
+		if(hoverTile instanceof BuildingTile) {
+			TileEntity te = level.getTileEntity(mouseTileX, mouseTileY);
+			if(te != null)
+				tileInfoStringList.add("  Residents: " + ((LivingHomeTE) te).getResidentCount());
+		}
+	}
+	private void hideTileInfo() {
+		showingTileInfo = false;
+	}
+	
 	public void update(GameContainer container, StateBasedGame arg1, int arg2) throws SlickException {	
 		level.update(container, arg1, arg2);
 		
@@ -157,9 +192,9 @@ public class IngameState extends AlfredGameState {
 		}
 		g.popTransform();
 		
-		if(heldTile == null) {
+		if(this.showingTileInfo) {
 			g.pushTransform();
-			this.drawTileOverlay(g);
+			this.drawTileInfoOverlay(g);
 			g.popTransform();
 		}
 		
@@ -186,23 +221,16 @@ public class IngameState extends AlfredGameState {
 		g.setColor(Color.white);
 	}
 	
-	public void drawTileOverlay(Graphics g) {
-		
-		int hoverTileId = this.level.getTile(mouseTileX, mouseTileY);
-		Tile hoverTile = Tile.tiles[hoverTileId];
-		
+	public void drawTileInfoOverlay(Graphics g) {
 		g.pushTransform();
 		g.setColor(IGNORE_OVERLAY_COLOR);
 		this.level.setupLevelTransform(g);
 		
 		g.scale(Chunk.TILE_SIZE, Chunk.TILE_SIZE);
-		g.fillRect(mouseTileX, mouseTileY, 1, 1);
+		g.fillRect(tileInfoX, tileInfoY, 1, 1);
 		g.popTransform();
-				
-		ArrayList<String> text = new ArrayList<String>();
-		text.add("Tile Details");
-		text.add("  [" + hoverTileId + "] " + hoverTile.name);
-		IngameState.drawHelpBox(g, mouseX + 8, mouseY - 16, (int) (150), (int) ((4 + 1.5f) * FontRenderer.FONT_HEIGHT), text);
+		
+		IngameState.drawHelpBox(g, Game.WIDTH - 200, 475, (int) (150), (int) ((5 + 1.5f) * FontRenderer.FONT_HEIGHT), tileInfoStringList);
 	}
 	
 	public void drawAvailableTiles(Graphics g, float tileSize) {

@@ -5,20 +5,20 @@ import java.awt.Point;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
+import com.yofreke.alfred.Game;
 import com.yofreke.alfred.PointF;
 import com.yofreke.alfred.item.ItemStack;
 import com.yofreke.alfred.level.Chunk;
 import com.yofreke.alfred.level.Level;
-import com.yofreke.alfred.level.tile.BuildingTile;
 import com.yofreke.alfred.level.tile.Tile;
 import com.yofreke.alfred.pathing.Path;
 import com.yofreke.alfred.pathing.PathFinder;
-import com.yofreke.alfred.tileEntity.TownCenterTE;
+import com.yofreke.alfred.tileEntity.LivingHomeTE;
 
 public class Living extends Entity {
 
 	private static float WALK_ERROR = 1f;
-	private static float WALK_ERROR_BLOCKED = 2f;
+	private static float WALK_ERROR_BLOCKED = 7f;
 	
 	private int health, maxHealth;
 	protected int age = 0;
@@ -32,7 +32,7 @@ public class Living extends Entity {
 	protected int actionCooldown = 20;
 	protected int actionTimer = 0;
 	
-	protected LivingHome home;
+	protected LivingHomeTE home;
 	protected PointF idleWaypoint;
 	private ItemStack carrying;
 	
@@ -52,8 +52,12 @@ public class Living extends Entity {
 		curPath = pathFinder.findPath(getTileX(), getTileY(), tileX, tileY);
 	}
 	
-	public void setHome(LivingHome newHome){
+	public void setHome(LivingHomeTE newHome){
+		if(this.home != null) {
+			this.home.unregisterResident(this);
+		}
 		this.home = newHome;
+		this.home.registerResident(this);
 		setIdleWaypoint(newHome.getX() * Chunk.TILE_SIZE + 4f, newHome.getY() * Chunk.TILE_SIZE + 4f);
 	}
 	public void setIdleWaypoint(float tx, float ty){
@@ -265,18 +269,20 @@ public class Living extends Entity {
 	
 	public void render(Graphics g){
 		//super.render(g);
-		g.drawLine(x, y, targPoint.x, targPoint.y);
-		g.setColor(Color.blue);
-		g.drawLine(x, y, idleWaypoint.x, idleWaypoint.y);
-		g.setColor(Color.white);
-		if(curPath != null){
-			g.setColor(curPath.isDone() ? Color.orange : Color.red);
-			curPath.render(g);
+		if(Game.DEBUG) {
+			g.drawLine(x, y, targPoint.x, targPoint.y);
+			g.setColor(Color.blue);
+			g.drawLine(x, y, idleWaypoint.x, idleWaypoint.y);
+			g.setColor(Color.white);
+			if(curPath != null){
+				g.setColor(curPath.isDone() ? Color.orange : Color.red);
+				curPath.render(g);
+			}
+			if(carrying != null){
+				g.setColor(Color.cyan);
+				g.fillRect(x - 2, y - 3, 4, 3);
+			}
+			g.setColor(Color.white);
 		}
-		if(carrying != null){
-			g.setColor(Color.cyan);
-			g.fillRect(x - 2, y - 3, 4, 3);
-		}
-		g.setColor(Color.white);
 	}
 }

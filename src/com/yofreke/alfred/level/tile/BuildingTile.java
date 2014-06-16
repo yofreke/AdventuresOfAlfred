@@ -4,13 +4,14 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import com.yofreke.alfred.entity.Living;
-import com.yofreke.alfred.entity.LivingHome;
 import com.yofreke.alfred.item.Item;
 import com.yofreke.alfred.item.ItemStack;
 import com.yofreke.alfred.level.Level;
 import com.yofreke.alfred.states.IngameState;
+import com.yofreke.alfred.tileEntity.LivingHomeTE;
+import com.yofreke.alfred.tileEntity.TileEntity;
 
-public abstract class BuildingTile extends Tile {
+public abstract class BuildingTile extends Tile implements ITileEntityPair {
 
 	protected Color drawColor = new Color(1,1,1,0.7f);
 	
@@ -18,12 +19,17 @@ public abstract class BuildingTile extends Tile {
 		super(id, texIndex);
 		// TODO Auto-generated constructor stub
 	}
+
+	@Override
+	public TileEntity getEntity(Level level, int worldX, int worldY) {
+		return new LivingHomeTE(level, worldX, worldY);
+	}
 	
 	public void onAdd(Level level, int x, int y){
 		super.onAdd(level, x, y);
 		Living worker = getNewWorker(level, x, y);
 		if(worker != null){
-			worker.setHome(new LivingHome(level, x, y));
+			worker.setHome((LivingHomeTE) level.getTileEntity(x, y));
 			level.addEntity(worker);
 		}
 	}

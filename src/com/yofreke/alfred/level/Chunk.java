@@ -147,6 +147,12 @@ public class Chunk {
 		t.onAdd(level, x + tOffsetX, y + tOffsetY);
 		redraw = true;
 	}
+	public TileEntity getTileEntity(int x, int y) {
+		int i = y * CHUNK_SIZE + x;
+		if(tileEntities.containsKey(i))
+			return tileEntities.get(i);
+		return null;
+	}
 	public boolean getIgnore(int localX, int localY){
 		return ignoreArray[localY * CHUNK_SIZE + localX];
 	}
