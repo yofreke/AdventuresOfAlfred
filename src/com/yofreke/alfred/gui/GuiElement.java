@@ -7,7 +7,9 @@ import org.newdawn.slick.Image;
 
 public class GuiElement {
 
+	protected GuiElement parent;
 	protected ArrayList<GuiElement> elementList = new ArrayList<GuiElement>();
+	public int id = 0;
 	
 	public float scale = 2.5f;
 	public int x, y;
@@ -24,6 +26,11 @@ public class GuiElement {
 		this.oHeight = this.height = h;
 	}
 	
+	public GuiElement setID(int id) {
+		this.id = id;
+		return this;
+	}
+	
 	public void setScale(float f){
 		this.scale = f;
 		width = (int) (scale * oWidth);
@@ -37,6 +44,7 @@ public class GuiElement {
 	
 	public void addElement(GuiElement element){
 		elementList.add(element);
+		element.parent = this;
 	}
 	
 	protected void drawElements(Graphics g){
@@ -53,9 +61,16 @@ public class GuiElement {
 		}
 	}
 	
+	public boolean onElementClicked(int id) {
+		return false;
+	}
+	
 	public GuiElement getClickedElement(int x, int y){
 		for(GuiElement element : elementList){
-			if(element.isOver(x, y)) return element.getClickedElement(x, y);
+			if(element.isOver(x, y)) {
+				if(!this.onElementClicked(element.id))
+					return element.getClickedElement(x, y);
+			}
 		}
 		return this;
 	}
@@ -71,18 +86,33 @@ public class GuiElement {
 		return flag;
 	}
 	
+	public float getDrawX() {
+		if(this.parent != null)
+			return this.parent.getDrawX() + this.x;
+		return this.x;
+	}
+	public float getDrawY() {
+		if(this.parent != null)
+			return this.parent.getDrawY() + this.y;
+		return this.y;
+	}
+	
 	public void draw(Graphics g){
+		g.pushTransform();
+		g.translate(x, y);
 		if(image != null) {
 			g.pushTransform();
-			g.translate(x, y);
 			g.scale(scale, scale);
 			g.drawImage(image, 0, 0);
 			g.popTransform();
 		}
 		drawElements(g);
+		g.popTransform();
 	}
 	
 	public boolean isOver(int mx, int my){
+		float x = getDrawX();
+		float y = getDrawY();
 		return mx >= x && my >= y && mx <= x + width * scale && my <= y + height * scale;
 	}
 }

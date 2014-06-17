@@ -20,7 +20,7 @@ public class TownCenterTE extends TileEntity {
 	}
 	
 	public void deposit(ItemStack itemstack){
-		IngameState.wood++;
+		IngameState.purse.transact("wood", 1);
 	}
 	
 	public void render(Graphics g){

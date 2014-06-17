@@ -12,6 +12,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.yofreke.alfred.Game;
+import com.yofreke.alfred.Purse;
 import com.yofreke.alfred.gui.FontRenderer;
 import com.yofreke.alfred.gui.GuiBuildingMenu;
 import com.yofreke.alfred.gui.GuiBuyBar;
@@ -30,9 +31,7 @@ public class IngameState extends AlfredGameState {
 	private static Color IGNORE_OVERLAY_COLOR = new Color(0.8f,0.8f,0.8f,0.6f);
 	private static Color BLOCKED_OVERLAY_COLOR = new Color(0.85f,0.4f,0.4f,0.6f);
 	
-	public static int wood = 0;
-	public static int rock = 0;
-	public static int food = 0;
+	public static Purse purse = new Purse();
 	
 	private static boolean LMB, RMB; 
 	private static int mouseX = 0, mouseY = 0;
@@ -72,10 +71,10 @@ public class IngameState extends AlfredGameState {
 		addElement(resourcesBar);
 		
 		GuiElement buyBar = new GuiBuyBar(400, 590, 160, 24).setImage(guiImage.getSubImage(0, 0, 160, 24));
-		buyBar.addElement(new GuiBuyButton(402, 600, 32, 16, Tile.lumberjack.id).setImage(guiImage.getSubImage(0, 48, 32, 16)));
+		buyBar.addElement(new GuiBuyButton(2, 10, 32, 16, Tile.lumberjack.id, -1).setImage(guiImage.getSubImage(0, 48, 32, 16)));
 		addElement(buyBar);
 		
-		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(Game.WIDTH - 280, 175, 200, 24).setImage(guiImage.getSubImage(144, 48, 112, 96));
+		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(this, Game.WIDTH - 280, 175, 200, 24).setImage(guiImage.getSubImage(144, 48, 112, 96));
 		buildingMenu.hide();
 		addElement(buildingMenu);
 	}

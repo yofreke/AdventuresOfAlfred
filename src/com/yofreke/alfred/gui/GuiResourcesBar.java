@@ -37,9 +37,9 @@ public class GuiResourcesBar extends GuiElement {
 		g.scale(scale, scale);
 		g.drawImage(image.getSubImage(0, 0, width, height), 0, 0);
 		g.drawImage(image.getSubImage(0, height+1, width, height), 0, 0);
-		FontRenderer.renderString(g, ""+IngameState.wood, 23, 8);
-		FontRenderer.renderString(g, ""+IngameState.rock, 70, 8);
-		FontRenderer.renderString(g, ""+IngameState.food, 119, 8);
+		FontRenderer.renderString(g, ""+IngameState.purse.balance("wood"), 23, 8);
+		FontRenderer.renderString(g, ""+IngameState.purse.balance("rock"), 70, 8);
+		FontRenderer.renderString(g, ""+IngameState.purse.balance("food"), 119, 8);
 		g.popTransform();
 
 		int mouseX = IngameState.getMouseX();

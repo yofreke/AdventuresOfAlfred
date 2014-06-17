@@ -36,8 +36,11 @@ public class LivingHomeTE extends TileEntity {
 		return this.residents.size();
 	}
 	
-	public int getMaxCapacity() {
+	public int getCapacity() {
 		return capacity;
+	}
+	public void upgradeCapacity() {
+		this.capacity++;
 	}
 
 	public void update(){

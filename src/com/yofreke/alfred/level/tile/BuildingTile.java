@@ -41,11 +41,11 @@ public abstract class BuildingTile extends Tile implements ITileEntityPair {
 	public void deposit(ItemStack itemstack){
 		int i = itemstack.getId();
 		if(i == Item.wood.id){
-			IngameState.wood += itemstack.getQuality();
+			IngameState.purse.transact("wood", itemstack.getQuality());
 		} else if(i == Item.rock.id){
-			IngameState.rock += itemstack.getQuality();
+			IngameState.purse.transact("rock", itemstack.getQuality());
 		} else if(i == Item.food.id){
-			IngameState.food += itemstack.getQuality();
+			IngameState.purse.transact("food", itemstack.getQuality());
 		}
 	}
 	

@@ -13,8 +13,8 @@ public class GuiBuyButton extends GuiButton {
 	private int buyType;
 	private BuildingTile buildingTile;
 	
-	public GuiBuyButton(int x, int y, int w, int h, int buyType) {
-		super(x, y, w, h);
+	public GuiBuyButton(int x, int y, int w, int h, int buyType, int id) {
+		super(x, y, w, h, id);
 		this.buyType = buyType;
 		Tile t = Tile.tiles[buyType];
 		if(t instanceof BuildingTile){
