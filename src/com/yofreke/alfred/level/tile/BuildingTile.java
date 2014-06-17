@@ -22,11 +22,15 @@ public abstract class BuildingTile extends Tile implements ITileEntityPair {
 
 	@Override
 	public TileEntity getEntity(Level level, int worldX, int worldY) {
-		return new LivingHomeTE(level, worldX, worldY);
+		return new LivingHomeTE(this, level, worldX, worldY);
 	}
 	
 	public void onAdd(Level level, int x, int y){
 		super.onAdd(level, x, y);
+		this.addWorker(level, x, y);
+	}
+	
+	public void addWorker(Level level, int x, int y) {
 		Living worker = getNewWorker(level, x, y);
 		if(worker != null){
 			worker.setHome((LivingHomeTE) level.getTileEntity(x, y));

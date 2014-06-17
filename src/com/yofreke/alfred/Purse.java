@@ -11,6 +11,8 @@ public class Purse {
 		this.addResource("wood");
 		this.addResource("rock");
 		this.addResource("food");
+		
+		this.transact("food", 100);
 	}
 	
 	private void addResource(String name) {

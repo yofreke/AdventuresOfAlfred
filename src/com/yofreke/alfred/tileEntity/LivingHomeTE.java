@@ -14,8 +14,11 @@ public class LivingHomeTE extends TileEntity {
 	
 	private int capacity = 1;
 	
-	public LivingHomeTE(Level level, int x, int y) {
+	private BuildingTile buildingTile;
+	
+	public LivingHomeTE(BuildingTile buildingTile, Level level, int x, int y) {
 		super(level, x, y);
+		this.buildingTile = buildingTile;
 		
 		Tile t = Tile.tiles[level.getTile(x, y)];
 		this.building = t instanceof BuildingTile ? (BuildingTile) t : null;
@@ -41,6 +44,8 @@ public class LivingHomeTE extends TileEntity {
 	}
 	public void upgradeCapacity() {
 		this.capacity++;
+		
+		buildingTile.addWorker(level, x, y);
 	}
 
 	public void update(){
