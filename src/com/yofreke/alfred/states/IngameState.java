@@ -13,6 +13,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import com.yofreke.alfred.Game;
 import com.yofreke.alfred.gui.FontRenderer;
+import com.yofreke.alfred.gui.GuiBuildingMenu;
 import com.yofreke.alfred.gui.GuiBuyBar;
 import com.yofreke.alfred.gui.GuiBuyButton;
 import com.yofreke.alfred.gui.GuiElement;
@@ -45,6 +46,7 @@ public class IngameState extends AlfredGameState {
 	private boolean isHovering = false;
 	
 	private GuiElement resourcesBar;
+	private GuiBuildingMenu buildingMenu;
 	
 	private boolean showingTileInfo = false;
 	private int tileInfoX, tileInfoY;
@@ -60,13 +62,22 @@ public class IngameState extends AlfredGameState {
 		level = new Level();
 		level.init(arg0, arg1);
 		
+		this.initGUI();
+	}
+	
+	protected void initGUI() throws SlickException {
 		guiImage = new Image("res/gui.png", false, Image.FILTER_NEAREST);
-
+		
 		resourcesBar = new GuiResourcesBar(this, 0, 0).setImage(guiImage);
 		addElement(resourcesBar);
+		
 		GuiElement buyBar = new GuiBuyBar(400, 590, 160, 24).setImage(guiImage.getSubImage(0, 0, 160, 24));
 		buyBar.addElement(new GuiBuyButton(402, 600, 32, 16, Tile.lumberjack.id).setImage(guiImage.getSubImage(0, 48, 32, 16)));
 		addElement(buyBar);
+		
+		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(Game.WIDTH - 280, 175, 200, 24).setImage(guiImage.getSubImage(144, 48, 112, 96));
+		buildingMenu.hide();
+		addElement(buildingMenu);
 	}
 	
 	public void mouseMoved(int px, int py, int x, int y) {
@@ -160,12 +171,16 @@ public class IngameState extends AlfredGameState {
 		tileInfoStringList.add("  Tile Damage: " + level.getDamage(mouseTileX, mouseTileY) + " / " + hoverTile.getMaxDamage());
 		if(hoverTile instanceof BuildingTile) {
 			TileEntity te = level.getTileEntity(mouseTileX, mouseTileY);
-			if(te != null)
-				tileInfoStringList.add("  Residents: " + ((LivingHomeTE) te).getResidentCount());
+			if(te != null) {
+				LivingHomeTE homete = (LivingHomeTE) te;
+				tileInfoStringList.add("  Residents: " + homete.getResidentCount());
+				this.buildingMenu.show(homete);
+			}
 		}
 	}
 	private void hideTileInfo() {
 		showingTileInfo = false;
+		this.buildingMenu.hide();
 	}
 	
 	public void update(GameContainer container, StateBasedGame arg1, int arg2) throws SlickException {	
@@ -174,6 +189,10 @@ public class IngameState extends AlfredGameState {
 		Input i = container.getInput();
 		if(i.isKeyPressed(Input.KEY_1)) {
 			Game.DEBUG = !Game.DEBUG;
+		} else if(i.isKeyPressed(Input.KEY_F5)){
+			this.level.reloadMap();
+			this.clearElements();
+			this.initGUI();
 		}
 		
 		super.update(container, arg1, arg2);

@@ -348,22 +348,28 @@ public class Level {
 	    return null;
 	}
 	
+	public void reloadMap() throws SlickException {
+		clearMap();
+		doImageLoad = false;
+		loadMap();
+	}
+	
 	public void update(GameContainer container, StateBasedGame arg1, int arg2) throws SlickException {
 		if(testEnt == null){
 			//addEntity((testEnt = new Lumberjack(this, 10, 10)));
 			//testEnt.setTargetPos(50, 10);
 		}
 		
-		
 		long curTime = System.currentTimeMillis();
 		long tickTime = curTime - lastTick;
 		lastTick = curTime;
 		
-		if(container.getInput().isKeyPressed(Input.KEY_F2)){
+		Input i = container.getInput();
+		if(i.isKeyPressed(Input.KEY_F2)){
 			setDebugView(!debugView);
 			loadMap();
 		}
-		else if(container.getInput().isKeyPressed(Input.KEY_F3)){
+		else if(i.isKeyPressed(Input.KEY_F3)){
 			/*long luStart = System.currentTimeMillis();
 			long luStop;
 			for(int i = 0; i < chunks.length; i++){
@@ -372,48 +378,43 @@ public class Level {
 			luStop = System.currentTimeMillis();
 			System.out.println("GEN TIME: "+(luStop - luStart)+" ms");*/
 		}
-		else if(container.getInput().isKeyPressed(Input.KEY_F4)){
+		else if(i.isKeyPressed(Input.KEY_F4)){
 			doImageLoad = true;
 			loadMap();
 		}
-		else if(container.getInput().isKeyPressed(Input.KEY_F5)){
-			clearMap();
-			doImageLoad = false;
-			loadMap();
-		}
-		if(container.getInput().isKeyPressed(Input.KEY_MINUS)){
+		if(i.isKeyPressed(Input.KEY_MINUS)){
 			targZoom *= 0.75f;
 		} else if(container.getInput().isKeyPressed(Input.KEY_EQUALS)){
 			targZoom *= 1.25f;
 		}
 		float moveStep = Chunk.CHUNK_SIZE * Chunk.TILE_SIZE * 0.1f;
-		if (container.getInput().isKeyDown(Input.KEY_UP)) {
+		if (i.isKeyDown(Input.KEY_UP)) {
 			targMapY += moveStep;
-		} else if (container.getInput().isKeyDown(Input.KEY_DOWN)) {
+		} else if (i.isKeyDown(Input.KEY_DOWN)) {
 			targMapY -= moveStep;
-		} else if (container.getInput().isKeyDown(Input.KEY_LEFT)) {
+		} else if (i.isKeyDown(Input.KEY_LEFT)) {
 			targMapX += moveStep;
-		} else if (container.getInput().isKeyDown(Input.KEY_RIGHT)) {
+		} else if (i.isKeyDown(Input.KEY_RIGHT)) {
 			targMapX -= moveStep;
 		}
 		
 		float testSpeed = 1.0f;
-		if (container.getInput().isKeyDown(Input.KEY_W)) {
+		if (i.isKeyDown(Input.KEY_W)) {
 			testEnt.velY = -testSpeed;
 			testEnt.setFacing(0);
-		} else if (container.getInput().isKeyDown(Input.KEY_S)) {
+		} else if (i.isKeyDown(Input.KEY_S)) {
 			testEnt.velY = testSpeed;
 			testEnt.setFacing(2);
-		} else if (container.getInput().isKeyDown(Input.KEY_A)) {
+		} else if (i.isKeyDown(Input.KEY_A)) {
 			testEnt.velX = -testSpeed;
 			testEnt.setFacing(3);
-		} else if (container.getInput().isKeyDown(Input.KEY_D)) {
+		} else if (i.isKeyDown(Input.KEY_D)) {
 			testEnt.velX = testSpeed;
 			testEnt.setFacing(1);
 		} else {
 			//testEnt.setFacing(-1);
 		}
-		if (container.getInput().isKeyDown(Input.KEY_SPACE)) {
+		if (i.isKeyDown(Input.KEY_SPACE)) {
 			testEnt.tryAction();
 		}
 		

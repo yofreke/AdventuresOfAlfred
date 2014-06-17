@@ -12,6 +12,8 @@ public class LivingHomeTE extends TileEntity {
 	private BuildingTile building;
 	private ArrayList<Living> residents = new ArrayList<Living>();
 	
+	private int capacity = 1;
+	
 	public LivingHomeTE(Level level, int x, int y) {
 		super(level, x, y);
 		
@@ -32,6 +34,10 @@ public class LivingHomeTE extends TileEntity {
 	}
 	public int getResidentCount() {
 		return this.residents.size();
+	}
+	
+	public int getMaxCapacity() {
+		return capacity;
 	}
 
 	public void update(){

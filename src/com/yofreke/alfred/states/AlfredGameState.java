@@ -19,8 +19,17 @@ public class AlfredGameState implements GameState {
 		
 	}
 	
+	/** For hot swap refreshes. */
+	protected void initGUI() throws SlickException {
+		
+	}
+	
 	protected void addElement(GuiElement element){
 		elementList.add(element);
+	}
+	
+	protected void clearElements() {
+		elementList.clear();
 	}
 	
 	protected void drawElements(Graphics g){
