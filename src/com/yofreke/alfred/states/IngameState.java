@@ -81,7 +81,7 @@ public class IngameState extends AlfredGameState {
 		buyBar.addElement(new GuiBuyButton(2, 10, 32, 16, Tile.lumberjack.id, -1).setImage(guiImage.getSubImage(0, 48, 32, 16)));
 		addElement(buyBar);
 		
-		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(this, Game.WIDTH - 280, 175, 112, 47);
+		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(this, Game.WIDTH - 280, 175, 120, 118);
 		buildingMenu.hide();
 		addElement(buildingMenu);
 	}
@@ -338,7 +338,7 @@ public class IngameState extends AlfredGameState {
 		g.pushTransform();
 		g.translate(x, y);
 		float scale = 3.0f;
-		g.scale(scale,scale);
+		g.scale(scale, scale);
 		int popupW = (int) (width / scale);
 		int popupH = (int) (height / scale);
 		// corners

@@ -2,6 +2,7 @@ package com.yofreke.alfred.gui;
 
 import org.newdawn.slick.Graphics;
 
+import com.yofreke.alfred.Game;
 import com.yofreke.alfred.level.tile.Tile;
 import com.yofreke.alfred.states.IngameState;
 import com.yofreke.alfred.tileEntity.LivingHomeTE;
@@ -24,17 +25,22 @@ public class GuiBuildingMenu extends GuiElement {
 	public GuiBuildingMenu(IngameState parent, int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.parent = parent;
-		setScale(2.5f);
+//		setScale(2.5f);
+		
+		// overwrite x to use width
+		this.x = (int) (Game.WIDTH - w * scale - 4);
 		
 		addElement(
 			new GuiHomeUpgradeButton(parent.purse, 10, 140, 24, 24, 1)
 				.setUpgrade(residentUpgrade = new HomeTEUpgrade("Add Resident", new Object[]{ "wood", 10, "food", 20 }))
 				.setImage(parent.guiImage.getSubImage(120, 48, 24, 24))
 		);
+		
+//		targOffsetX = -800;
 	}
 	
 	public void hide() {
-		targOffsetX = this.width;
+		targOffsetX = width * scale + 4;
 	}
 	
 	public void show(LivingHomeTE target) {
