@@ -27,7 +27,7 @@ public class GuiBuildingMenu extends GuiElement {
 		setScale(2.5f);
 		
 		addElement(
-			new GuiHomeUpgradeButton(10, 70, 24, 24, 1)
+			new GuiHomeUpgradeButton(parent.purse, 10, 140, 24, 24, 1)
 				.setUpgrade(residentUpgrade = new HomeTEUpgrade("Add Resident", new Object[]{ "wood", 10, "food", 20 }))
 				.setImage(parent.guiImage.getSubImage(120, 48, 24, 24))
 		);
@@ -61,6 +61,7 @@ public class GuiBuildingMenu extends GuiElement {
 		offsetX += (targOffsetX - offsetX) * 0.1;
 		g.translate(offsetX, 0);
 		
+		IngameState.draw9Tile(g, IngameState.solidBackground, x, y, (int) (width * scale), (int) (height * scale));
 		super.draw(g);
 		
 		g.pushTransform();
@@ -69,6 +70,12 @@ public class GuiBuildingMenu extends GuiElement {
 		FontRenderer.renderString(g, title, 10, 10);
 		if(target != null) {
 			FontRenderer.renderString(g, "Resident Count: " + target.getResidentCount(), 20, 22);
+			
+			String s = target.getCollectionType();
+			if(s != null) {
+				parent.purse.drawIcon(g, s, 20, 36);
+				FontRenderer.renderString(g, "Collected: " + target.getCollectedAmount(), 40, 38);
+			}
 		}
 		
 		g.popTransform();

@@ -6,6 +6,8 @@ import com.yofreke.alfred.entity.Living;
 import com.yofreke.alfred.entity.Lumberjack;
 import com.yofreke.alfred.level.Chunk;
 import com.yofreke.alfred.level.Level;
+import com.yofreke.alfred.tileEntity.LivingHomeTE;
+import com.yofreke.alfred.tileEntity.TileEntity;
 
 public class LumberjackTile extends BuildingTile {
 
@@ -14,6 +16,13 @@ public class LumberjackTile extends BuildingTile {
 		name = "Lumber Mill";
 		renderPass = 1;
 		ignorePositions = new int[]{-1,0, 1,0};
+	}
+	
+	@Override
+	public TileEntity getEntity(Level level, int worldX, int worldY) {
+		LivingHomeTE t = (LivingHomeTE) super.getEntity(level, worldX, worldY);
+		t.setCollectionType("wood");
+		return t;
 	}
 	
 	public void renderAt(Graphics g, Level level, int x, int y, int dx, int dy){

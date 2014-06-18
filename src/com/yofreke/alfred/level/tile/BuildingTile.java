@@ -42,16 +42,5 @@ public abstract class BuildingTile extends Tile implements ITileEntityPair {
 		return null;//new Lumberjack(level, x * 8.5f, y * 8.5f);
 	}
 	
-	public void deposit(ItemStack itemstack){
-		int i = itemstack.getId();
-		if(i == Item.wood.id){
-			IngameState.purse.transact("wood", itemstack.getQuality());
-		} else if(i == Item.rock.id){
-			IngameState.purse.transact("rock", itemstack.getQuality());
-		} else if(i == Item.food.id){
-			IngameState.purse.transact("food", itemstack.getQuality());
-		}
-	}
-	
 	public abstract void renderHeldTile(Graphics g);
 }

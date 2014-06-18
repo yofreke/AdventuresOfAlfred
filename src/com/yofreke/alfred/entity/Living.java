@@ -169,7 +169,7 @@ public class Living extends Entity {
 		
 		if(carrying != null){
 			if(atTile(home.getX(), home.getY())){
-				home.getBuilding().deposit(carrying);
+				home.deposit(carrying);
 				carrying = null;
 				postDeposit();
 			}

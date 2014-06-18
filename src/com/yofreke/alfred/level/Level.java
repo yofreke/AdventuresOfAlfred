@@ -96,6 +96,7 @@ public class Level {
 
 		LevelUtils.fillCircle(this, 15, 15, 8, Tile.gravel.id);
 		setTile(15, 15, Tile.flag.id);
+		setTile(17, 17, Tile.lumberjack.id);
 	}
 	
 	public void clearMap(){

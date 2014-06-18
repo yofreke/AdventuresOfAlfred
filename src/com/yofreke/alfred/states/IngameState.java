@@ -39,8 +39,11 @@ public class IngameState extends AlfredGameState {
 	private static int mouseTileX = 0, mouseTileY = 0;
 	
 	public Level level;
-	public static Image guiImage;
 	private BuildingTile heldTile;
+
+	public static Image guiImage;
+	public static Image helpTextBackground;
+	public static Image solidBackground;
 	
 	private boolean isHovering = false;
 	
@@ -65,7 +68,11 @@ public class IngameState extends AlfredGameState {
 	}
 	
 	protected void initGUI() throws SlickException {
+		// Set the static gui image.  This is sorta hacky, needs to be better.
 		guiImage = new Image("res/gui.png", false, Image.FILTER_NEAREST);
+		helpTextBackground = guiImage.getSubImage(0, 64, 16, 16);
+		solidBackground = guiImage.getSubImage(0, 80, 16, 16);
+		purse.initImages(guiImage);
 		
 		resourcesBar = new GuiResourcesBar(this, 0, 0).setImage(guiImage);
 		addElement(resourcesBar);
@@ -74,7 +81,7 @@ public class IngameState extends AlfredGameState {
 		buyBar.addElement(new GuiBuyButton(2, 10, 32, 16, Tile.lumberjack.id, -1).setImage(guiImage.getSubImage(0, 48, 32, 16)));
 		addElement(buyBar);
 		
-		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(this, Game.WIDTH - 280, 175, 200, 24).setImage(guiImage.getSubImage(144, 48, 112, 96));
+		buildingMenu = (GuiBuildingMenu) new GuiBuildingMenu(this, Game.WIDTH - 280, 175, 112, 47);
 		buildingMenu.hide();
 		addElement(buildingMenu);
 	}
@@ -316,26 +323,7 @@ public class IngameState extends AlfredGameState {
 			y = k;
 		}
 		
-		g.pushTransform();
-		g.translate(x, y);
-		float scale = 3.0f;
-		g.scale(scale,scale);
-		int popupW = (int) (width / scale);
-		int popupH = (int) (height / scale);
-		// corners
-		g.drawImage(guiImage, 0, 0, 4, 4, 0, 64, 4, 68);
-		g.drawImage(guiImage, popupW - 4, 0, popupW, 4, 12, 64, 16, 68);
-		g.drawImage(guiImage, 0, popupH - 4, 4, popupH, 0, 76, 4, 80);
-		g.drawImage(guiImage, popupW - 4, popupH - 4, popupW, popupH, 12, 76, 16, 80);
-		// sides
-		g.drawImage(guiImage, 0, 4, 4, popupH - 4, 0, 68, 4, 76);
-		g.drawImage(guiImage, 4, 0, popupW - 4, 4, 4, 64, 11, 67);
-		g.drawImage(guiImage, 4, popupH - 4, popupW - 4, popupH, 4, 76, 11, 80);
-		g.drawImage(guiImage, popupW - 4, 4, popupW, popupH - 4, 12, 68, 16, 75);
-		// center
-		g.drawImage(guiImage, 4, 4, popupW - 4, popupH - 4, 4, 68, 12, 76);
-		// text
-		g.popTransform();
+		draw9Tile(g, helpTextBackground, x, y, width, height);
 		g.pushTransform();
 		g.translate(x, y);
 		g.scale(boxFontScale,boxFontScale);
@@ -343,6 +331,29 @@ public class IngameState extends AlfredGameState {
 		for(int i = 0; i < stringAl.size(); i++){
 			FontRenderer.renderString(g, stringAl.get(i), fontDrawX, (int) ((i * (FontRenderer.FONT_HEIGHT * boxFontScale + 4) + 8) / boxFontScale));
 		}
+		g.popTransform();
+	}
+	
+	public static void draw9Tile(Graphics g, Image image, int x, int y, int width, int height) {
+		g.pushTransform();
+		g.translate(x, y);
+		float scale = 3.0f;
+		g.scale(scale,scale);
+		int popupW = (int) (width / scale);
+		int popupH = (int) (height / scale);
+		// corners
+		g.drawImage(image, 0, 0, 4, 4, 0, 0, 4, 4);
+		g.drawImage(image, popupW - 4, 0, popupW, 4, 12, 0, 16, 4);
+		g.drawImage(image, 0, popupH - 4, 4, popupH, 0, 12, 4, 16);
+		g.drawImage(image, popupW - 4, popupH - 4, popupW, popupH, 12, 12, 16, 16);
+		// sides
+		g.drawImage(image, 0, 4, 4, popupH - 4, 0, 4, 4, 12);
+		g.drawImage(image, 4, 0, popupW - 4, 4, 4, 0, 12, 4);
+		g.drawImage(image, 4, popupH - 4, popupW - 4, popupH, 4, 12, 12, 16);
+		g.drawImage(image, popupW - 4, 4, popupW, popupH - 4, 12, 4, 16, 12);
+		// center
+		g.drawImage(image, 4, 4, popupW - 4, popupH - 4, 4, 4, 12, 12);
+		// text
 		g.popTransform();
 	}
 	
